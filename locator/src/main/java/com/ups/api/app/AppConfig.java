@@ -49,6 +49,9 @@ public class AppConfig {
 	
 	@Value("${api.locator.transaction.source}")
 	private String transactionSrc;
+
+	@Value("${api.locator.locale:en_US}")
+	private String locale;
 	
 	@Value("#{${api.locator.scenario.properties}}")
 	private Map<String,List<String>> scenarioProperties;

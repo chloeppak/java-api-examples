@@ -38,7 +38,7 @@ public class Track implements CommandLineRunner {
 			// Get Tracking information
 			final TrackApiResponse trackApiResponse = this.sendRequest(this.appConfig.getInquiryNumber(), transId,
 					this.appConfig.getTransactionSrc(),
-					"fr_FR",
+					this.appConfig.getLocale(),
 					"false");
 			ObjectMapper mapper = new ObjectMapper();
 

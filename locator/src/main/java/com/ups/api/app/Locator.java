@@ -82,7 +82,7 @@ public class Locator implements CommandLineRunner {
 		locatorRequestWrapper,
 		transId,
 		this.appConfig.getTransactionSrc(),
-		"en_US");
+		this.appConfig.getLocale());
 	}
 	
 	private void cleanup() {

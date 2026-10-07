@@ -1,0 +1,93 @@
+package com.ups.api.app;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.queryParam;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.ExpectedCount;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestTemplate;
+
+/**
+ * Verifies the Locator locale is driven by configuration, without any network access.
+ */
+class LocatorLocaleOfflineTest {
+
+	private static final String OAUTH_BASE_URL = "http://localhost.test/";
+	private static final String LOCATOR_BASE_URL = "http://localhost.test/api/";
+
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
+			.withUserConfiguration(AppConfig.class)
+			.withPropertyValues(
+					"api.oauth.partner.client.id=client",
+					"api.oauth.partner.secret=secret",
+					"api.oauth.base.url=" + OAUTH_BASE_URL,
+					"api.locator.version=v1",
+					"api.locator.reqOption=56",
+					"api.locator.transaction.source=testing",
+					"api.locator.scenario.properties={LocatorSuccess:'LocatorRequest.json,org.openapitools.locator.client.model.LocatorRequest'}");
+
+	@Test
+	void localeDefaultsToEnUsWhenNotConfigured() {
+		contextRunner.run(context -> assertEquals("en_US", context.getBean(AppConfig.class).getLocale()));
+	}
+
+	@Test
+	void localeIsReadFromProperty() {
+		contextRunner.withPropertyValues("api.locator.locale=de_DE")
+				.run(context -> assertEquals("de_DE", context.getBean(AppConfig.class).getLocale()));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "en_US", "fr_FR", "es_MX", "ja_JP" })
+	void configuredLocaleIsSentAsQueryParam(String locale) {
+		RestTemplate restTemplate = new RestTemplate();
+		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).ignoreExpectOrder(true).build();
+		server.expect(ExpectedCount.between(0, 1), requestTo(OAUTH_BASE_URL + "security/v1/oauth/token"))
+				.andRespond(withSuccess("{\"access_token\":\"token\",\"expires_in\":\"3600\"}",
+						MediaType.APPLICATION_JSON));
+		server.expect(ExpectedCount.once(), requestTo(org.hamcrest.Matchers.startsWith(LOCATOR_BASE_URL)))
+				.andExpect(method(HttpMethod.POST))
+				.andExpect(queryParam("Locale", locale))
+				.andRespond(withSuccess("{\"LocatorResponse\":{}}", MediaType.APPLICATION_JSON));
+
+		AppConfig appConfig = new AppConfig();
+		appConfig.setClientID("client");
+		appConfig.setSecret("secret");
+		appConfig.setOauthBaseUrl(OAUTH_BASE_URL);
+		appConfig.setLocatorBaseUrl(LOCATOR_BASE_URL);
+		appConfig.setLocatorVersion("v1");
+		appConfig.setReqOption("56");
+		appConfig.setTransactionSrc("testing");
+		appConfig.setTokenExipryToleranceInSec(5);
+		appConfig.setLocale(locale);
+		appConfig.setScenarioProperties(Collections.singletonMap(AppConfig.LOCATOR_SUCCESS_SCENARIO,
+				Arrays.asList("LocatorRequest.json", "org.openapitools.locator.client.model.LocatorRequest")));
+
+		// Locator caches its API client in a ThreadLocal; use a fresh thread so no other test's client is reused.
+		CompletableFuture.runAsync(() -> {
+			try {
+				new Locator(restTemplate, appConfig).run();
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+		}, r -> new Thread(r).start()).join();
+
+		server.verify();
+	}
+}

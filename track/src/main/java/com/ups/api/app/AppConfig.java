@@ -39,6 +39,9 @@ public class AppConfig {
 	
 	@Value("${api.track.transaction.source:testing}")
 	private String transactionSrc;
+
+	@Value("${api.track.locale:en_US}")
+	private String locale;
 	
 	@Value("${api.oauth.access.token.expiry.tolerance:5}")
 	private long tokenExipryToleranceInSec;

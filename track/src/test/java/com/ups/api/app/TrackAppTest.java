@@ -52,7 +52,7 @@ public class TrackAppTest {
 		// Get Tracking information
 		final TrackApiResponse trackApiResponse = track.sendRequest(this.appConfig.getInquiryNumber(), transId,
 				this.appConfig.getTransactionSrc(),
-				"en_US",
+				this.appConfig.getLocale(),
 				"false");
 		assertNotNull(trackApiResponse);
 		assertNotNull(trackApiResponse.getTrackResponse());

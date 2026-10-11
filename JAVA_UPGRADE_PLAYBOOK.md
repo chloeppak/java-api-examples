@@ -2,7 +2,7 @@
 
 This playbook records how the sample projects in this repo were moved from Java 8 to Java 17, and gives a checklist for repeating or re-checking the upgrade on the other modules or on other projects.
 
-> **Scope note:** On `main`, only **one** module has been upgraded so far. The fork's own upgrade of three more modules is on branch `upgrade/session-a` and has **not** been merged into `main` yet. The other 11 modules are still on Java 8. See [Summary](#1-summary) and [Gaps](#gaps--unconfirmed-details).
+> **Scope note:** On `main`, only **one** module has been upgraded so far. The fork's own upgrade of three more modules is on branch `upgrade/session-a` in [PR #2](https://github.com/chloeppak/java-api-examples/pull/2), which is still open and has **not** been merged into `main`. The other 11 modules are still on Java 8. See [Summary](#1-summary) and [Gaps](#gaps--unconfirmed-details).
 
 ---
 
@@ -21,7 +21,7 @@ This playbook records how the sample projects in this repo were moved from Java 
 | Commit | Date | Author | Where | Modules |
 |---|---|---|---|---|
 | `7713e87` "Update pom.xml" | 2023-11-30 | rcmasey (upstream UPS) | `main` | `oauth_AuthCode` |
-| `0d38056` "Upgrade addressValidation, dangerousGoods, landedCost to Java 17 / Spring Boot 3.1.4" | 2026-10-10 | chloepvarnas (with Devin) | branch `upgrade/session-a` (not on `main`) | `addressValidation`, `dangerousGoods`, `landedCost` |
+| `0d38056` "Upgrade addressValidation, dangerousGoods, landedCost to Java 17 / Spring Boot 3.1.4" | 2026-10-10 | chloepvarnas (with Devin) | branch `upgrade/session-a`, [PR #2](https://github.com/chloeppak/java-api-examples/pull/2) (open, not on `main`) | `addressValidation`, `dangerousGoods`, `landedCost` |
 
 ### Status of each module
 
@@ -96,7 +96,7 @@ This was a large rewrite of the pom (+281 / −58 lines). The commit message is 
 
 **Source changes in the same period (2023-11-30):** These commits reworked `oauth_AuthCode/src/main/java/...` (they deleted the `controller/`, `service/`, and `src/test` folders, added `dto/AuthorizeClientResponse.java` and `dto/ErrorResponse.java`, and edited `AuthCodeDemo.java` and `AuthCodeApplication.java`). Nothing in history shows them as *needed* for Java 17. They look like a functional rework done alongside the upgrade.
 
-### 3b. `addressValidation`, `dangerousGoods`, `landedCost` `pom.xml` (commit `0d38056`, branch `upgrade/session-a`)
+### 3b. `addressValidation`, `dangerousGoods`, `landedCost` `pom.xml` (commit `0d38056`, branch `upgrade/session-a`, [PR #2](https://github.com/chloeppak/java-api-examples/pull/2))
 
 The same 28-line change was made in all three files: `addressValidation/pom.xml`, `dangerousGoods/pom.xml`, and `landedCost/pom.xml`.
 
@@ -206,6 +206,7 @@ Then check the console for the application's REST response, as `README.md` descr
 - `BUILD SUCCESS`. Manifest: `Build-Jdk-Spec: 17`, `Spring-Boot-Version: 3.1.4`. Class major version `61`. `spring-web:6.0.12`.
 - The generated sources use `jakarta.annotation.Generated`, `Nullable`, and `Nonnull`. Before the upgrade, `main` generated `javax.annotation.*`.
 - `java -jar target/addressValidation-1.0-SNAPSHOT.jar` started on Spring Boot v3.1.4 / Spring v6.0.12. The OAuth call returned `401 ClientId is Invalid`, which is expected with the placeholder credentials. A successful REST response needs real CIE credentials.
+- PR #2 also records `mvn clean test` on JDK 17 before and after the change. The results were identical: addressValidation 9 run / 5 errors, dangerousGoods 7 / 4, landedCost 9 / 2. All errors are live-CIE `401`s or the `dangerousGoods` JSON bug that predates the upgrade.
 - For comparison, `addressValidation` on `main` (not upgraded) builds with JDK 17 but produces class major version `52`, with `Spring-Boot-Version: 2.7.4`.
 
 ---
@@ -214,7 +215,7 @@ Then check the console for the application's REST response, as `README.md` descr
 
 A JDK 17 install can still build the Java 8 modules (they compile to `1.8` bytecode), so a rollback only needs pom changes, not a JDK downgrade.
 
-- **Upgrade not merged yet** (for example `upgrade/session-a`): close the PR or don't merge the branch. `main` is unaffected.
+- **Upgrade not merged yet** (for example `upgrade/session-a` / [PR #2](https://github.com/chloeppak/java-api-examples/pull/2)): close the PR or don't merge the branch. `main` is unaffected.
 - **Upgrade merged:** revert the upgrade commit and open a PR with the revert:
   ```sh
   git revert <upgrade-sha>        # e.g. 0d38056 (session-a) or 7713e87 (oauth_AuthCode)
@@ -251,7 +252,7 @@ A JDK 17 install can still build the Java 8 modules (they compile to `1.8` bytec
 
 ## Gaps / unconfirmed details
 
-- **Upgrade incomplete on `main`.** Only `oauth_AuthCode` is on Java 17 on `main`. `addressValidation`, `dangerousGoods`, and `landedCost` are upgraded only on the unmerged branch `upgrade/session-a`. The other 11 modules (see §1) are still on Java 8, and no upgrade branch for them exists in the remote.
+- **Upgrade incomplete on `main`.** Only `oauth_AuthCode` is on Java 17 on `main`. `addressValidation`, `dangerousGoods`, and `landedCost` are upgraded only on the unmerged branch `upgrade/session-a` ([PR #2](https://github.com/chloeppak/java-api-examples/pull/2)). The other 11 modules (see §1) are still on Java 8, and no upgrade branch for them exists in the remote.
 - **No stated rationale for `7713e87`.** Its message is "Update pom.xml". The reasons for each pin (for example guava `32.1.0-jre`, `maven-core` 3.9.4, the Tomcat exclusions) are not documented.
 - **`oauth_AuthCode` inconsistencies.** Its pom still declares `jakarta-annotation-version` `1.3.5` and the unused `spring-web-version` `5.3.29`. It also does not compile on `main` (see Troubleshooting). Whether it ran correctly on Java 17 after the upgrade cannot be confirmed.
 - **No CI or toolchain enforcement.** No pipeline builds the modules on JDK 17, so all verification is manual (§5).

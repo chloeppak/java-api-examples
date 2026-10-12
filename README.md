@@ -9,7 +9,7 @@ Additionally the projects offer the following features:
 - Modifiable example requests
 ## Getting Started
 ### Prerequisites
-- You will need to have Maven and the Java Development Kit installed.
+- You will need to have Maven and the Java Development Kit (JDK 17 or later) installed.
 
 ### Download
 - You can either download a local copy or clone the repository:

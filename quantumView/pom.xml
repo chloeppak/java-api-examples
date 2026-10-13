@@ -184,7 +184,7 @@
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
 				<!-- RELEASE_VERSION -->
-				<version>6.2.0</version>
+				<version>6.6.0</version>
 				<dependencies>
 					<dependency>
 						<groupId>org.mozilla</groupId>

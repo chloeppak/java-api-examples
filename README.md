@@ -9,7 +9,7 @@ Additionally the projects offer the following features:
 - Modifiable example requests
 ## Getting Started
 ### Prerequisites
-- You will need to have Maven and the Java Development Kit installed.
+- You will need to have Maven and the Java Development Kit (JDK) 17 or later installed.
 
 ### Download
 - You can either download a local copy or clone the repository:
@@ -38,7 +38,7 @@ mvn clean package
 
 - Run the project that is generated in the <project home>/target directory.
 ```sh
-java -jar <API name>.jar            
+java -jar target/<artifactId>-<version>.jar   # e.g. target/addressValidation-1.0-SNAPSHOT.jar
 ```
 - Check the console for the application's REST response.
 

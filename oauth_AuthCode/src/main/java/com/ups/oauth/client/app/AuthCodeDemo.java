@@ -1,12 +1,20 @@
 package com.ups.oauth.client.app;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Service;
 import com.ups.oauth.client.dto.AuthTokenResponce;
 import com.ups.oauth.client.dto.AuthorizeClientResponse;
 import com.ups.oauth.client.dto.ErrorResponse;

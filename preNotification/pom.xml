@@ -40,7 +40,7 @@
 		<code-gen-oauth-spec>OAuthClientCredentials.json</code-gen-oauth-spec>
 		<code-gen-appl-execution-name>PreNotification</code-gen-appl-execution-name>
 		<code-gen-appl-spec>PreNotification.json</code-gen-appl-spec>
-		<main-class-name>com.ups.dap.PreNotificationApplication</main-class-name>
+		<main-class-name>com.ups.api.PreNotificationApplication</main-class-name>
 	</properties>
 	<dependencies>
 		<!-- OPENAPI code generation dependencies -->

@@ -40,7 +40,7 @@
 		<code-gen-oauth-spec>OAuthClientCredentials.json</code-gen-oauth-spec>
 		<code-gen-appl-execution-name>QuantumView</code-gen-appl-execution-name>
 		<code-gen-appl-spec>QuantumView.json</code-gen-appl-spec>
-		<main-class-name>com.ups.dap.QuantumViewApplication</main-class-name>
+		<main-class-name>com.ups.api.QuantumViewApplication</main-class-name>
 	</properties>
 	<dependencies>
 		<!-- OPENAPI code generation dependencies -->

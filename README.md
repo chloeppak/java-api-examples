@@ -30,16 +30,31 @@ git clone https://github.com/UPS-API/java-api-examples.git
 
 ### Build and run
 
-- Build the project using Maven
+- Requires JDK 17+ and Maven 3.6.3+. The projects use Spring Boot 3.x.
+- The repository root `pom.xml` is a parent/aggregator for all API projects. It centralizes the Java version, Spring Boot version, OpenAPI generator version, and shared dependency/plugin versions.
+
+- Build every project from the repository root:
+```sh
+mvn clean package
+```
+
+- Or build a single project from the root:
+```sh
+mvn clean package -pl <project home> -am
+```
+
+- Or build it from its own directory (the root `pom.xml` must still be present one level up):
 ```sh
 cd <project home>
 mvn clean package
 ```
 
-- Run the project that is generated in the <project home>/target directory.
+- Each build writes an executable jar named `<artifactId>-<version>.jar` to `<project home>/target`. Run it from the project directory:
 ```sh
-java -jar <API name>.jar            
+cd <project home>
+java -jar target/<artifactId>-<version>.jar
 ```
+  For example: `cd addressValidation && java -jar target/addressValidation-1.0-SNAPSHOT.jar`
 - Check the console for the application's REST response.
 
 ## License

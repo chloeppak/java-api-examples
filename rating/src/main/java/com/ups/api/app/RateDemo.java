@@ -10,7 +10,6 @@ import org.openapitools.rate.client.model.RATERequestWrapper;
 import org.openapitools.rate.client.model.RATEResponseWrapper;
 import org.openapitools.rate.client.model.RateResponseRatedShipment;
 import org.openapitools.rate.client.model.RateResponseResponse;
-import org.openapitools.rate.client.model.RatedShipmentGuaranteedDelivery;
 import org.openapitools.rate.client.model.RatedShipmentRatedPackage;
 import org.openapitools.rate.client.model.ResponseAlert;
 import org.springframework.boot.CommandLineRunner;
@@ -144,7 +143,6 @@ public class RateDemo implements CommandLineRunner {
 		ratedShipments.forEach(ratedShipment-> {
 			log.info("\tRatedShipment");
 			log.info("\t\tService: Code[{}]", ratedShipment.getService().getCode());
-			printGuaranteedDelivery(ratedShipment.getGuaranteedDelivery());
 			log.info("\t\tBillingWeight: {} {}", ratedShipment.getBillingWeight().getWeight(),
 													ratedShipment.getBillingWeight().getUnitOfMeasurement().getDescription());
 			log.info("\t\tTransportationCharges: {} {}", ratedShipment.getTransportationCharges().getMonetaryValue(),
@@ -157,18 +155,6 @@ public class RateDemo implements CommandLineRunner {
 													ratedShipment.getTotalCharges().getCurrencyCode());
 			printRatedPackage(ratedShipment.getRatedPackage());
 		});	
-	}
-	
-	private void printGuaranteedDelivery(final RatedShipmentGuaranteedDelivery guarateedDelivery) {
-		if(null != guarateedDelivery) {
-			log.info("\t\tGuaranteedDelivery:");
-			log.info("\t\t\tBusinessDaysInTransit: {}", guarateedDelivery.getBusinessDaysInTransit());
-			
-			final String time = guarateedDelivery.getDeliveryByTime();
-			if(null != time) {
-				log.info("\t\t\tDeliveryByTime: {}", time);
-			}
-		}
 	}
 	
 	private void printRatedPackage(final List<RatedShipmentRatedPackage> ratedPackages) {

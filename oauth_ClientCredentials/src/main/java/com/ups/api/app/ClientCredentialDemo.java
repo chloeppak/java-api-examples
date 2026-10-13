@@ -3,7 +3,7 @@ package com.ups.api.app;
 
 import com.ups.oauth.client.ApiClient;
 import com.ups.oauth.client.api.OAuthApi;
-import com.ups.oauth.client.model.TokenSuccessResponse;
+import com.ups.oauth.client.model.GenerateTokenSuccessResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -40,9 +40,9 @@ public class ClientCredentialDemo implements CommandLineRunner {
         return ((EXPIRY.get() - new Date().getTime() / 1000) - 1 < TOKEN_EXPIRY_TOLERANCE_IN_SEC.get());
     }
 
-    public static void getAccessToken(final AppConfig appConfig, final RestTemplate restTemplate) {
+    public static String getAccessToken(final AppConfig appConfig, final RestTemplate restTemplate) {
 
-    	TokenSuccessResponse generateAccessTokenResponse = null;
+		GenerateTokenSuccessResponse generateAccessTokenResponse = null;
         if (!readExpiryToleranceFromConfig) {
             TOKEN_EXPIRY_TOLERANCE_IN_SEC.set(appConfig.getTokenExipryToleranceInSec());
             readExpiryToleranceFromConfig = true;
@@ -60,7 +60,7 @@ public class ClientCredentialDemo implements CommandLineRunner {
                     log.info("ecnoded clientId and secret: [{}]", encodedClientIdAndSecret);      
 
                     try {
-                        generateAccessTokenResponse = oauthApi.createToken(CLIENT_CREDENTIALS, null);  
+                        generateAccessTokenResponse = oauthApi.generateToken(CLIENT_CREDENTIALS, null);
                         accessToken = generateAccessTokenResponse.getAccessToken();
                         EXPIRY.set(new Date().getTime() / 1000 + Long.parseLong(generateAccessTokenResponse.getExpiresIn()) - 2);
                     } catch (HttpClientErrorException httpClientException) {
@@ -73,6 +73,7 @@ public class ClientCredentialDemo implements CommandLineRunner {
         }
         log.info("access token [{}], expiry [{}]", generateAccessTokenResponse, EXPIRY.get());
         appConfig.getAccessTokenStore().put(appConfig.getClientID(), accessToken);
+        return accessToken;
     }
 
     private static void applicationErrorHandler(Exception ex) {

@@ -9,7 +9,7 @@ Additionally the projects offer the following features:
 - Modifiable example requests
 ## Getting Started
 ### Prerequisites
-- You will need to have Maven and the Java Development Kit installed.
+- You will need to have Maven (3.6.3+) and the Java Development Kit (JDK) 17 or newer installed, e.g. [Eclipse Temurin 17](https://adoptium.net/temurin/releases/?version=17). Verify with `java -version`.
 
 ### Download
 - You can either download a local copy or clone the repository:
